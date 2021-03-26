@@ -2,8 +2,16 @@ output "vpc_id" {
   value = module.network.vpc_id
 }
 
-output "subnet_public_id" {
-  value = module.network.subnet_public_id
+output "subnet_public_nat_id" {
+  value = module.network.subnet_public_nat_id
+}
+
+output "subnet_public_bastion_id" {
+  value = module.network.subnet_public_bastion_id
+}
+
+output "subnet_public_web_id" {
+  value = module.network.subnet_public_web_id
 }
 
 output "subnet_private_id" {

@@ -21,12 +21,13 @@ resource "aws_instance" "bastion" {
   ami                    = var.image_id
   user_data              = <<-EOF
                            #!/bin/bash
-                           sudo apt-get update
-                           sudo apt-get -y upgrade
+                           exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+                           sudo yum -y update
+                           sudo yum -y upgrade
                            EOF
   instance_type          = var.instance_type
   key_name               = aws_key_pair.deployer.key_name
-  subnet_id              = data.terraform_remote_state.network.outputs.subnet_public_id
+  subnet_id              = data.terraform_remote_state.network.outputs.subnet_public_bastion_id
   vpc_security_group_ids = [data.terraform_remote_state.network.outputs.sg_bastion_id]
 
   tags = {

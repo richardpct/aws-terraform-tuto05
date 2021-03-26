@@ -47,7 +47,7 @@ resource "aws_instance" "web" {
   user_data              = data.template_file.user_data.rendered
   instance_type          = var.instance_type
   key_name               = data.terraform_remote_state.bastion.outputs.ssh_key
-  subnet_id              = data.terraform_remote_state.network.outputs.subnet_public_id
+  subnet_id              = data.terraform_remote_state.network.outputs.subnet_public_web_id
   vpc_security_group_ids = [data.terraform_remote_state.network.outputs.sg_webserver_id]
 
   tags = {

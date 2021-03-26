@@ -18,12 +18,30 @@ resource "aws_internet_gateway" "my_igw" {
   }
 }
 
-resource "aws_subnet" "public" {
+resource "aws_subnet" "public_nat" {
   vpc_id     = aws_vpc.my_vpc.id
-  cidr_block = var.subnet_public
+  cidr_block = var.subnet_public_nat
 
   tags = {
-    Name = "subnet_public-${var.env}"
+    Name = "subnet_public-nat-${var.env}"
+  }
+}
+
+resource "aws_subnet" "public_bastion" {
+  vpc_id     = aws_vpc.my_vpc.id
+  cidr_block = var.subnet_public_bastion
+
+  tags = {
+    Name = "subnet_public-bastion-${var.env}"
+  }
+}
+
+resource "aws_subnet" "public_web" {
+  vpc_id     = aws_vpc.my_vpc.id
+  cidr_block = var.subnet_public_web
+
+  tags = {
+    Name = "subnet_public-web-${var.env}"
   }
 }
 
@@ -46,7 +64,7 @@ resource "aws_eip" "nat" {
 
 resource "aws_nat_gateway" "gw" {
   allocation_id = aws_eip.nat.id
-  subnet_id     = aws_subnet.public.id
+  subnet_id     = aws_subnet.public_nat.id
 
   tags = {
     Name = "nat_gw-${var.env}"
@@ -79,8 +97,18 @@ resource "aws_route_table" "route" {
   }
 }
 
-resource "aws_route_table_association" "public" {
-  subnet_id      = aws_subnet.public.id
+resource "aws_route_table_association" "public_nat" {
+  subnet_id      = aws_subnet.public_nat.id
+  route_table_id = aws_route_table.route.id
+}
+
+resource "aws_route_table_association" "public_bastion" {
+  subnet_id      = aws_subnet.public_bastion.id
+  route_table_id = aws_route_table.route.id
+}
+
+resource "aws_route_table_association" "public_web" {
+  subnet_id      = aws_subnet.public_web.id
   route_table_id = aws_route_table.route.id
 }
 
