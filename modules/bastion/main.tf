@@ -1,14 +1,11 @@
-provider "aws" {
-  region = var.region
-}
-
 data "terraform_remote_state" "network" {
   backend = "s3"
 
   config = {
-    bucket = var.network_remote_state_bucket
-    key    = var.network_remote_state_key
-    region = var.region
+    profile = var.aws_profile
+    bucket  = var.network_remote_state_bucket
+    key     = var.network_remote_state_key
+    region  = var.region
   }
 }
 
@@ -17,10 +14,26 @@ resource "aws_key_pair" "deployer" {
   public_key = var.ssh_public_key
 }
 
+data "aws_ami" "amazonlinux" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["al2023-ami-*-kernel-*-x86_64"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = [137112412989] # amazon owner id
+}
+
 resource "aws_instance" "bastion" {
-  ami                    = var.image_id
+  ami                    = data.aws_ami.amazonlinux.id
   user_data              = <<-EOF
-                           #!/bin/bash
+                           #!/usr/bin/env bash
                            exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
                            sudo yum -y update
                            sudo yum -y upgrade
@@ -37,7 +50,7 @@ resource "aws_instance" "bastion" {
 
 resource "aws_eip" "bastion" {
   instance = aws_instance.bastion.id
-  vpc      = true
+  domain   = "vpc"
 
   tags = {
     Name = "eip_bastion-${var.env}"

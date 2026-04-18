@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 sudo yum -y update
 sudo yum -y upgrade
-sudo yum -y install python38
-sudo pip-3.8 install redis
+sudo yum -y install python3-pip
+sudo pip install redis
 sudo useradd www -s /sbin/nologin
 mkdir -p /var/lib/www/cgi-bin
 

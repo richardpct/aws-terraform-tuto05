@@ -7,6 +7,10 @@ locals {
   anywhere       = ["0.0.0.0/0"]
 }
 
+variable "aws_profile" {
+  description = "aws profile"
+}
+
 variable "region" {
   description = "region"
 }
@@ -36,5 +40,5 @@ variable "subnet_private" {
 }
 
 variable "cidr_allowed_ssh" {
-  description = "cidr block allowed to connect via SSH"
+  description = "cidr block allowed to connect via ssh"
 }

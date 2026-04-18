@@ -1,3 +1,7 @@
+variable "aws_profile" {
+  description = "aws profile"
+}
+
 variable "region" {
   description = "region"
 }
@@ -28,10 +32,6 @@ variable "database_remote_state_bucket" {
 
 variable "database_remote_state_key" {
   description = "database key"
-}
-
-variable "image_id" {
-  description = "image id"
 }
 
 variable "instance_type" {

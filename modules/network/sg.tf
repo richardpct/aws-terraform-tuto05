@@ -1,4 +1,4 @@
-# Rules for Bastion
+# rules for bastion
 resource "aws_security_group" "bastion" {
   name   = "sg_bastion-${var.env}"
   vpc_id = aws_vpc.my_vpc.id
@@ -8,7 +8,7 @@ resource "aws_security_group" "bastion" {
   }
 }
 
-resource "aws_security_group_rule" "bastion_inbound_ssh" {
+resource "aws_security_group_rule" "bastion_from_me_ssh" {
   type              = "ingress"
   from_port         = local.ssh_port
   to_port           = local.ssh_port
@@ -17,7 +17,7 @@ resource "aws_security_group_rule" "bastion_inbound_ssh" {
   security_group_id = aws_security_group.bastion.id
 }
 
-resource "aws_security_group_rule" "bastion_outbound_ssh" {
+resource "aws_security_group_rule" "bastion_to_any_ssh" {
   type              = "egress"
   from_port         = local.ssh_port
   to_port           = local.ssh_port
@@ -26,7 +26,7 @@ resource "aws_security_group_rule" "bastion_outbound_ssh" {
   security_group_id = aws_security_group.bastion.id
 }
 
-resource "aws_security_group_rule" "bastion_outbound_http" {
+resource "aws_security_group_rule" "bastion_to_any_http" {
   type              = "egress"
   from_port         = local.http_port
   to_port           = local.http_port
@@ -35,7 +35,7 @@ resource "aws_security_group_rule" "bastion_outbound_http" {
   security_group_id = aws_security_group.bastion.id
 }
 
-resource "aws_security_group_rule" "bastion_outbound_https" {
+resource "aws_security_group_rule" "bastion_to_any_https" {
   type              = "egress"
   from_port         = local.https_port
   to_port           = local.https_port
@@ -44,7 +44,7 @@ resource "aws_security_group_rule" "bastion_outbound_https" {
   security_group_id = aws_security_group.bastion.id
 }
 
-# Rules for DataBase
+# rules for database
 resource "aws_security_group" "database" {
   name   = "sg_database-${var.env}"
   vpc_id = aws_vpc.my_vpc.id
@@ -54,7 +54,7 @@ resource "aws_security_group" "database" {
   }
 }
 
-resource "aws_security_group_rule" "database_inbound_ssh" {
+resource "aws_security_group_rule" "db_from_bastion_ssh" {
   type                     = "ingress"
   from_port                = local.ssh_port
   to_port                  = local.ssh_port
@@ -63,7 +63,7 @@ resource "aws_security_group_rule" "database_inbound_ssh" {
   security_group_id        = aws_security_group.database.id
 }
 
-resource "aws_security_group_rule" "database_inbound_redis" {
+resource "aws_security_group_rule" "db_from_web_redis" {
   type                     = "ingress"
   from_port                = local.redis_port
   to_port                  = local.redis_port
@@ -72,7 +72,7 @@ resource "aws_security_group_rule" "database_inbound_redis" {
   security_group_id        = aws_security_group.database.id
 }
 
-resource "aws_security_group_rule" "database_outbound_http" {
+resource "aws_security_group_rule" "db_to_any_http" {
   type              = "egress"
   from_port         = local.http_port
   to_port           = local.http_port
@@ -81,7 +81,7 @@ resource "aws_security_group_rule" "database_outbound_http" {
   security_group_id = aws_security_group.database.id
 }
 
-resource "aws_security_group_rule" "database_outbound_https" {
+resource "aws_security_group_rule" "db_to_any_https" {
   type              = "egress"
   from_port         = local.https_port
   to_port           = local.https_port
@@ -90,7 +90,7 @@ resource "aws_security_group_rule" "database_outbound_https" {
   security_group_id = aws_security_group.database.id
 }
 
-# Rules for WebServer
+# rules for webserver
 resource "aws_security_group" "webserver" {
   name   = "sg_webserver-${var.env}"
   vpc_id = aws_vpc.my_vpc.id
@@ -100,7 +100,7 @@ resource "aws_security_group" "webserver" {
   }
 }
 
-resource "aws_security_group_rule" "webserver_inbound_ssh" {
+resource "aws_security_group_rule" "web_from_bastion_ssh" {
   type                     = "ingress"
   from_port                = local.ssh_port
   to_port                  = local.ssh_port
@@ -109,7 +109,7 @@ resource "aws_security_group_rule" "webserver_inbound_ssh" {
   security_group_id        = aws_security_group.webserver.id
 }
 
-resource "aws_security_group_rule" "webserver_inbound_http" {
+resource "aws_security_group_rule" "web_from_any_http" {
   type              = "ingress"
   from_port         = local.webserver_port
   to_port           = local.webserver_port
@@ -118,7 +118,7 @@ resource "aws_security_group_rule" "webserver_inbound_http" {
   security_group_id = aws_security_group.webserver.id
 }
 
-resource "aws_security_group_rule" "webserver_outbound_http" {
+resource "aws_security_group_rule" "web_to_any_http" {
   type              = "egress"
   from_port         = local.http_port
   to_port           = local.http_port
@@ -127,7 +127,7 @@ resource "aws_security_group_rule" "webserver_outbound_http" {
   security_group_id = aws_security_group.webserver.id
 }
 
-resource "aws_security_group_rule" "webserver_outbound_https" {
+resource "aws_security_group_rule" "web_to_any_https" {
   type              = "egress"
   from_port         = local.https_port
   to_port           = local.https_port
@@ -136,7 +136,7 @@ resource "aws_security_group_rule" "webserver_outbound_https" {
   security_group_id = aws_security_group.webserver.id
 }
 
-resource "aws_security_group_rule" "webserver_outbound_redis" {
+resource "aws_security_group_rule" "web_to_db_redis" {
   type                     = "egress"
   from_port                = local.redis_port
   to_port                  = local.redis_port
