@@ -17,13 +17,22 @@ resource "aws_security_group_rule" "bastion_from_me_ssh" {
   security_group_id = aws_security_group.bastion.id
 }
 
-resource "aws_security_group_rule" "bastion_to_any_ssh" {
-  type              = "egress"
-  from_port         = local.ssh_port
-  to_port           = local.ssh_port
-  protocol          = "tcp"
-  cidr_blocks       = local.anywhere
-  security_group_id = aws_security_group.bastion.id
+resource "aws_security_group_rule" "bastion_to_web_ssh" {
+  type                     = "egress"
+  from_port                = local.ssh_port
+  to_port                  = local.ssh_port
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.webserver.id
+  security_group_id        = aws_security_group.bastion.id
+}
+
+resource "aws_security_group_rule" "bastion_to_db_ssh" {
+  type                     = "egress"
+  from_port                = local.ssh_port
+  to_port                  = local.ssh_port
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.database.id
+  security_group_id        = aws_security_group.bastion.id
 }
 
 resource "aws_security_group_rule" "bastion_to_any_http" {
